@@ -1,26 +1,37 @@
-//import mongoose
 const mongoose = require("mongoose");
-const logger = require("./logger"); //import logger
-
-//create the connection to the database
-mongoose.connect(process.env.Mongo_URL);
-
-//get the default connection
-const db = mongoose.connection;
+const logger = require("./logger");
 
 //handle db events
-
-db.on("connected", () => {
+mongoose.connection.on("connected", () => {
     logger.info("Database connected successfully");
 })
 
-db.on("disconnected", () => {
+mongoose.connection.on("disconnected", () => {
     logger.info("Database disconnected");
 })
 
-db.on("error", (err) => {
-    logger.error("Database connection error: ", err);
-})      
+mongoose.connection.on("error", (err) => {
+    logger.error(err, "Database connection error: ");
+})
+
+const connectToDB = async () => {
+    try{
+        const MongoURL = process.env.Mongo_URL;
+
+        if(!MongoURL){
+            logger.error("MongoURL is not defined in .env");
+            throw new exception()
+        }
+
+        await mongoose.connect(MongoURL);
+        const db =  mongoose.connection;
+        return db;
+    }
+    catch(err){
+        logger.error(err, "Database connection error");
+        process.exit(1);
+    } 
+}   
 
 //export the db connection
-module.exports = db; 
+module.exports = connectToDB; 

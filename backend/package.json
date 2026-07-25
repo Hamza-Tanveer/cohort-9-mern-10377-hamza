@@ -9,8 +9,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js | pino-pretty",
-    "test": "echo \"no tests defined yet\" && exit 1"
+    "test": "echo \"no tests defined yet\""
   },
+  "engines" : {
+      "node": ">=18.0.0" 
+    },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "body-parser": "^2.3.0",

@@ -1,21 +1,32 @@
 const express = require("express");
 const dotenv = require("dotenv");
-dotenv.config(); // Load environment variables from .env file
+dotenv.config(); 
 const logger = require("./logger");
 const bodyParser = require("body-parser");
-const db = require("./db");
+const connectToDB = require("./db");
 
+const app = express(); 
+app.use(bodyParser.json()); 
 
-
-const app = express(); // Create an instance of the Express application
-app.use(bodyParser.json()); // Add body parser middleware for json parsing
-
-// Define a simple route for testing
+//a simple route for testing
 app.get("/", (req, res) => {
     res.send("Hello, World!");
 });
 
+const PORT = Number(process.env.PORT) || 5000;
+
 // Start the server
-app.listen(process.env.PORT, () => {
-    logger.info(`Server is running on port ${process.env.PORT}`);
+const StartServer = async() => {
+    try{
+        await connectToDB();
+        app.listen(PORT, () => {
+        logger.info(`Server is running on port ${PORT}`);
 });
+    }
+    catch(err){
+        logger.error(err, "Failed to start the server");
+        process.exit(1);
+    }
+}
+
+StartServer();
