@@ -19,8 +19,7 @@ const connectToDB = async () => {
         const MongoURL = process.env.Mongo_URL;
 
         if(!MongoURL){
-            logger.error("MongoURL is not defined in .env");
-            throw new exception()
+            throw new Error("MongoURL is not defined in .env");
         }
 
         await mongoose.connect(MongoURL);
