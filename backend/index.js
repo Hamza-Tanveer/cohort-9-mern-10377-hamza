@@ -13,7 +13,6 @@ app.use('/users', userRoutes);
 
 const PORT = Number(process.env.PORT) || 5000;
 
-// Start the server
 const StartServer = async() => {
     try{
         await connectToDB();

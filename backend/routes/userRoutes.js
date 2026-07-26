@@ -11,6 +11,8 @@ router.post('/signup', async(req, res) => {
         const {firstName, lastName, email, password} = req.body; 
         const newUser = new User({firstName, lastName, email, password});
 
+        await newUser.validate();
+
         //hash the user password before storing
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newUser.password, salt);
@@ -18,7 +20,12 @@ router.post('/signup', async(req, res) => {
 
         const response = await newUser.save();
         logger.info('Signup successful');
-        res.status(201).json({message: 'Signup successful', userInfo: response});
+        res.status(201).json({message: 'Signup successful', userInfo: {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            email: response.email,
+        }});
 
     }
     catch(err){
@@ -36,15 +43,14 @@ router.post('/login', async (req, res) => {
 
     if(!user){
         logger.error('User not found');
-        return res.status(404).json({error: 'User not found'});
+        return res.status(401).json({error: 'Invalid credentials'});
     }
-
-    //compare password 
-    const isValidPassword = bcrypt.compare(password, user.password);
+ 
+    const isValidPassword = await bcrypt.compare(password, user.password);
 
     if(!isValidPassword){
         logger.error('Password is not valid');
-        return res.status(400).json({error: 'Invalid Password'});
+        return res.status(401).json({error: 'Invalid credentials'});
     }
 
     const payLoad = {

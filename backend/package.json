@@ -12,7 +12,7 @@
     "test": "echo \"no tests defined yet\""
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.9.0"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
