@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        match: /^[A-Za-z][\w.+\-]{0,59}@[A-Za-z.\-]+\.[A-Za-z],}$/,
+        match: /^[\S]+@[\S]+\.[\S]+$/, //very basic check for testing only
     },
     password: {
         type: String,
