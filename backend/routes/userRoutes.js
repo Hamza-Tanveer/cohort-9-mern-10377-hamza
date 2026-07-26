@@ -18,7 +18,7 @@ router.post('/signup', async(req, res) => {
         const hashedPassword = await bcrypt.hash(newUser.password, salt);
         newUser.password = hashedPassword;
 
-        const response = await newUser.save();
+        const response = await newUser.save({validateBeforeSave: false});
         logger.info('Signup successful');
         res.status(201).json({message: 'Signup successful', userInfo: {
             id: response.id,
