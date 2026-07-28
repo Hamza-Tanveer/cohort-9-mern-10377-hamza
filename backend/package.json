@@ -1,0 +1,25 @@
+{
+  "name": "notes-app-backend",
+  "version": "1.0.0",
+  "description": "This is the backend for the notes app.",
+  "license": "ISC",
+  "author": "hamza-tanveer",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"no tests defined yet\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.8.0",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "pino-pretty": "^13.1.3"
+  }
+}
