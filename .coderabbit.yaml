@@ -7,5 +7,5 @@ reviews:
       - main
       - develop
   path_instructions:
-    - path: "**/*"
-      instructions: "Flag missing TypeScript types as HIGH. Flag async/await without try-catch as MEDIUM. Check React component structure and missing prop validation."
+    - path: "frontend/**/*"
+      instructions: "This frontend uses JavaScript and JSX, not TypeScript; do not flag missing TypeScript types. Flag async/await without try-catch as MEDIUM. Check React component structure and missing prop validation."
