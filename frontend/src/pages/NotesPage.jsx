@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const NotesPage = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
+  const handleLogout = async () => {
+    await axios.post("/users/logout");
     navigate("/login");
   };
 

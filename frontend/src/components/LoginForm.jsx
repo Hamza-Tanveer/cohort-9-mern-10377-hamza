@@ -15,12 +15,11 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const {data} = await axios.post("/users/login", {email, password});
+      await axios.post("/users/login", {email, password});
 
-      localStorage.setItem("loginToken", data.token);
       navigate("/notes");
     } catch (err) {
-      setError(err.response?.data?.message || "Login Failed. Please try again.");
+      setError(err.response?.data?.error || "Login Failed. Please try again.");
     } finally {
       setLoading(false);
     }

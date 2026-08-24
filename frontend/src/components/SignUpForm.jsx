@@ -35,12 +35,13 @@ const SignupForm = () => {
       )}
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
           Name
         </label>
         <input
           type="text"
           name="name"
+          id="name"
           required
           value={name}
           onChange={(e) => {setName(e.target.value)}}
@@ -50,12 +51,13 @@ const SignupForm = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
           Email
         </label>
         <input
           type="email"
           name="email"
+          id="email"
           required
           value={email}
           onChange={(e) => {setEmail(e.target.value)}}
@@ -65,12 +67,13 @@ const SignupForm = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
           Password
         </label>
         <input
           type="password"
           name="password"
+          id="password"
           required
           value={password}
           onChange={(e) => {setPassword(e.target.value)}}

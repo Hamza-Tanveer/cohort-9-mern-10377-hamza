@@ -22,8 +22,7 @@ router.post('/signup', async(req, res) => {
         logger.info('Signup successful');
         res.status(201).json({message: 'Signup successful', userInfo: {
             id: response.id,
-            firstName: response.firstName,
-            lastName: response.lastName,
+            name: response.name,
             email: response.email,
         }});
 
@@ -61,12 +60,28 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(payLoad, process.env.JWT_Secret, {expiresIn: '1h'});
 
     logger.info('User logged in');
-    res.status(200).json({message: 'logged in', token: token});
+    res.cookie('session', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 1000,
+    });
+    res.status(200).json({message: 'logged in'});
     }
     catch(err){
         logger.error(err, 'Some kind of error');
         res.status(400).json({error: 'Login failed'});
     }
 })
+
+//user logout
+router.post('/logout', (req, res) => {
+    res.clearCookie('session', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+    res.status(200).json({message: 'logged out'});
+});
 
 module.exports = router;
