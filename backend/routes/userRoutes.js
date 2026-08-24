@@ -8,8 +8,8 @@ const jwt = require('jsonwebtoken');
 //user signup endpoint
 router.post('/signup', async(req, res) => {
     try{
-        const {firstName, lastName, email, password} = req.body; 
-        const newUser = new User({firstName, lastName, email, password});
+        const {name, email, password} = req.body; 
+        const newUser = new User({name, email, password});
 
         await newUser.validate();
 
