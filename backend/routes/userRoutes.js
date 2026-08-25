@@ -28,7 +28,7 @@ router.post('/signup', async(req, res) => {
 
     }
     catch(err){
-        logger.error(err);
+        logger.error({err}, 'Could not register new user');
         return res.status(400).json({message: 'Could not register new user'});
     }
 });
@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
     try{
         const {email, password} = req.body;
 
-    const user = await User.findOne({email}).select('+password');
+        const user = await User.findOne({email}).select('+password');
 
     if(!user){
         logger.error('User not found');
@@ -69,19 +69,25 @@ router.post('/login', async (req, res) => {
     res.status(200).json({message: 'logged in'});
     }
     catch(err){
-        logger.error(err, 'Some kind of error');
+        logger.error({err}, 'Login failed');
         res.status(400).json({error: 'Login failed'});
     }
 })
 
 //user logout
 router.post('/logout', (req, res) => {
-    res.clearCookie('session', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-    });
-    res.status(200).json({message: 'logged out'});
+    try {
+        res.clearCookie('session', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+        res.status(200).json({message: 'logged out'});
+    }
+    catch (err) {
+        logger.error({err}, 'Logout failed');
+        res.status(500).json({error: 'Logout failed'});
+    }
 });
 
 module.exports = router;

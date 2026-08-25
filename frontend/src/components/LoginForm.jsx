@@ -16,7 +16,6 @@ const LoginForm = () => {
 
     try {
       await axios.post("/users/login", {email, password});
-
       navigate("/notes");
     } catch (err) {
       setError(err.response?.data?.error || "Login Failed. Please try again.");
@@ -34,12 +33,13 @@ const LoginForm = () => {
       )}
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
           Email
         </label>
         <input
           type="email"
           name="email"
+          id="email"
           required
           value={email}
           onChange={(e) => {setEmail(e.target.value)}}
@@ -49,12 +49,13 @@ const LoginForm = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
           Password
         </label>
         <input
           type="password"
           name="password"
+          id="password"
           required
           value={password}
           onChange={(e) => {setPassword(e.target.value)}}
