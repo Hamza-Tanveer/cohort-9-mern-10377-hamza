@@ -5,16 +5,17 @@ const Auth = (req, res, next) => {
     const token = req.cookies?.session;
 
     if (!token) {
-        logger.warn({path: req.originalUrl}, 'Authentication required');
+        logger.warn("Token missing from the request.");
         return res.status(401).json({error: 'Authentication required'});
     }
 
     try {
-        req.userId = jwt.verify(token, process.env.JWT_Secret).userID;
+        const decoded = jwt.verify(token, process.env.JWT_Secret);
+        req.userId = decoded.userID;
         next();
     }
     catch (err) {
-        logger.warn({err, path: req.originalUrl}, 'Invalid or expired session');
+        logger.warn("Token is expired or invalid");
         return res.status(401).json({error: 'Invalid or expired session'});
     }
 };

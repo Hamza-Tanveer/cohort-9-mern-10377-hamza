@@ -7,16 +7,8 @@ export default defineConfig({
   server: {
     host: "127.0.0.1",
     proxy: {
-      "/users": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/notes": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
+      "/users": "http://localhost:3000",
+      "/notes": "http://localhost:3000",
     },
   },
 });

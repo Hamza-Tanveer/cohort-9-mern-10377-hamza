@@ -15,11 +15,9 @@ app.use(cookieParser());
 app.use('/users', userRoutes);
 app.use('/notes', noteRoutes);
 
+//global error handler
 app.use((err, req, res, next) => {
-    logger.error({err, method: req.method, path: req.originalUrl}, 'Unhandled request error');
-    if (res.headersSent) {
-        return next(err);
-    }
+    logger.error(err);
     res.status(500).json({error: 'Internal server error'});
 });
 

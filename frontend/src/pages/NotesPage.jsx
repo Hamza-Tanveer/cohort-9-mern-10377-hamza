@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
@@ -13,7 +13,7 @@ const NotesPage = () => {
       try {
         const { data } = await api.get("/notes");
         setNotes(data);
-      } catch (err) {
+      } catch {
         setError("Could not load notes.");
       } finally {
         setLoading(false);
@@ -27,7 +27,7 @@ const NotesPage = () => {
     try {
       await api.delete(`/notes/${id}`);
       setNotes(notes.filter((note) => note._id !== id));
-    } catch (err) {
+    } catch {
       setError("Could not delete note.");
     }
   };
@@ -36,7 +36,7 @@ const NotesPage = () => {
     try {
       await api.post("/users/logout");
       navigate("/login");
-    } catch (err) {
+    } catch {
       setError("Could not log out.");
     }
   };
@@ -87,7 +87,7 @@ const NotesPage = () => {
                 </div>
                 <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end gap-2">
                   <button
-                    onClick={() => navigate(`/notes/edit/${note._id}`)}
+                    onClick={() => navigate(`/notes/edit/${note._id}`, { state: { note } })}
                     className="text-sm px-3 py-1 border rounded text-slate-700 hover:bg-slate-50"
                   >
                     Edit

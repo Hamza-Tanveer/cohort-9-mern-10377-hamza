@@ -5,25 +5,30 @@ const logger = require('./../logger');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const cookieOptions = {
+    httpOnly: true,
+    maxAge: 60 * 60 * 1000,
+};
+
 //user signup endpoint
 router.post('/signup', async(req, res) => {
     try{
         const {name, email, password} = req.body; 
-        const newUser = new User({name, email, password});
-
-        await newUser.validate();
 
         //hash the user password before storing
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newUser.password, salt);
-        newUser.password = hashedPassword;
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const newUser = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+        });
 
-        const response = await newUser.save({validateBeforeSave: false});
         logger.info('Signup successful');
         res.status(201).json({message: 'Signup successful', userInfo: {
-            id: response.id,
-            name: response.name,
-            email: response.email,
+            id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
         }});
 
     }
@@ -60,12 +65,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(payLoad, process.env.JWT_Secret, {expiresIn: '1h'});
 
     logger.info('User logged in');
-    res.cookie('session', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 1000,
-    });
+    res.cookie('session', token, cookieOptions);
     res.status(200).json({message: 'logged in'});
     }
     catch(err){
@@ -77,11 +77,7 @@ router.post('/login', async (req, res) => {
 //user logout
 router.post('/logout', (req, res) => {
     try {
-        res.clearCookie('session', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+        res.clearCookie('session', cookieOptions);
         res.status(200).json({message: 'logged out'});
     }
     catch (err) {
