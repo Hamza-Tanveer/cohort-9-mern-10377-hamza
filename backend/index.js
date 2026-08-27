@@ -3,13 +3,23 @@ const dotenv = require("dotenv");
 dotenv.config(); 
 const logger = require("./logger");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const connectToDB = require("./db");
 const userRoutes = require('./routes/userRoutes');
+const noteRoutes = require('./routes/noteRoutes');
 
 const app = express(); 
 app.use(bodyParser.json()); 
+app.use(cookieParser());
 
 app.use('/users', userRoutes);
+app.use('/notes', noteRoutes);
+
+//global error handler
+app.use((err, req, res, next) => {
+    logger.error(err);
+    res.status(500).json({error: 'Internal server error'});
+});
 
 const PORT = Number(process.env.PORT) || 5000;
 
