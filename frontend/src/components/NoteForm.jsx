@@ -25,21 +25,33 @@ const NoteForm = () => {
   );
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) return undefined;
+
+    const controller = new AbortController();
+    let isActive = true;
+    setLoading(true);
+    setError("");
 
     const fetchNote = async () => {
       try {
-        const { data } = await api.get(`/notes/${id}`);
+        const { data } = await api.get(`/notes/${id}`, { signal: controller.signal });
+        if (!isActive) return;
         setTitle(data.title || "");
         setContent(data.content || "");
       } catch {
+        if (!isActive) return;
         setError("Could not load note.");
       } finally {
-        setLoading(false);
+        if (isActive) setLoading(false);
       }
     };
 
     fetchNote();
+
+    return () => {
+      isActive = false;
+      controller.abort();
+    };
   }, [id]);
 
   const handleSubmit = async (event) => {
