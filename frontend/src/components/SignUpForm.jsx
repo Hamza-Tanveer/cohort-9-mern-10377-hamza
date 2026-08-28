@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axios";
 
 const SignupForm = () => {
   
@@ -17,7 +17,7 @@ const SignupForm = () => {
     setLoading(true);
 
     try {
-      await axios.post("/users/signup", {name, email, password});
+      await api.post("/users/signup", {name, email, password});
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed. Please try again.");

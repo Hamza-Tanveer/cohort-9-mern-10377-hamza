@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
+const getPreviewText = (html) => {
+  const documentParser = new DOMParser();
+  return documentParser.parseFromString(html || "", "text/html").body.textContent || "";
+};
+
 const NotesPage = () => {
   const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
@@ -83,7 +88,7 @@ const NotesPage = () => {
               <div key={note._id} className="bg-white p-4 rounded shadow-sm flex flex-col justify-between">
                 <div>
                   <h2 className="font-semibold text-lg text-slate-800">{note.title}</h2>
-                  <p className="text-slate-600 text-sm mt-1 line-clamp-3">{note.content}</p>
+                  <p className="text-slate-600 text-sm mt-1 line-clamp-3">{getPreviewText(note.content)}</p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end gap-2">
                   <button

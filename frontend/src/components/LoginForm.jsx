@@ -1,6 +1,6 @@
 import { useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axios";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      await axios.post("/users/login", {email, password});
+      await api.post("/users/login", {email, password});
       navigate("/notes");
     } catch (err) {
       setError(err.response?.data?.error || "Login Failed. Please try again.");

@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.use(Auth);
 
+//create note endpoint
 router.post('/', async (req, res) => {
     try {
         const {title, content, isPinned} = req.body;
@@ -17,6 +18,7 @@ router.post('/', async (req, res) => {
             isPinned,
         });
 
+        logger.info({noteId: note._id, userId: req.userId}, 'Note created');
         res.status(201).json(note);
     }
     catch (err) {
@@ -25,6 +27,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+//get all notes endpoint
 router.get('/', async (req, res) => {
     try {
         const notes = await Note.find({user: req.userId}).sort({updatedAt: -1});
@@ -36,12 +39,52 @@ router.get('/', async (req, res) => {
     }
 });
 
+//get specific note endpoint
+router.get('/:id', async (req, res) => {
+    try {
+        const note = await Note.findOne({_id: req.params.id, user: req.userId});
+
+        if (!note) {
+            return res.status(404).json({error: 'Note not found'});
+        }
+
+        logger.info({noteId: note._id, userId: req.userId}, 'Note fetched');
+        res.status(200).json(note);
+    }
+    catch (err) {
+        logger.error({err, noteId: req.params.id, userId: req.userId}, 'Could not load note');
+        res.status(400).json({error: 'Could not load note'});
+    }
+});
+
 router.patch('/:id', async (req, res) => {
     try {
         const {title, content, isPinned} = req.body;
         const note = await Note.findOneAndUpdate(
             {_id: req.params.id, user: req.userId},
             {title, content, isPinned},
+            {new: true, runValidators: true}
+        );
+
+        if (!note) {
+            return res.status(404).json({error: 'Note not found'});
+        }
+
+        logger.info({noteId: note._id, userId: req.userId}, 'Note updated');
+        res.status(200).json(note);
+    }
+    catch (err) {
+        logger.error({err, noteId: req.params.id, userId: req.userId}, 'Could not update note');
+        res.status(400).json({error: 'Could not update note'});
+    }
+});
+
+router.put('/:id', async (req, res) => {
+    try {
+        const {title, content} = req.body;
+        const note = await Note.findOneAndUpdate(
+            {_id: req.params.id, user: req.userId},
+            {title, content},
             {new: true, runValidators: true}
         );
 
@@ -65,6 +108,7 @@ router.delete('/:id', async (req, res) => {
             return res.status(404).json({error: 'Note not found'});
         }
 
+        logger.info({noteId: note._id, userId: req.userId}, 'Note deleted');
         res.status(204).send();
     }
     catch (err) {

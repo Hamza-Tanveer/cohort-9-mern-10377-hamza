@@ -1,18 +1,46 @@
-import { useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import JoditEditor from "jodit-react";
 import api from "../api/axios";
 
 const NoteForm = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { id } = useParams();
-  const note = location.state?.note;
-  const isEditing = Boolean(id);
-  const [title, setTitle] = useState(note?.title || "");
-  const [content, setContent] = useState(note?.content || "");
-  const [isPinned, setIsPinned] = useState(note?.isPinned || false);
+  const editor = useRef(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(Boolean(id));
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      placeholder: "Start writing your note here...",
+      height: 350,
+      showStatusbar: false,
+      buttons: ["bold", "italic", "underline", "|", "ul", "ol", "|", "font", "fontsize", "|", "link", "undo", "redo"],
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchNote = async () => {
+      try {
+        const { data } = await api.get(`/notes/${id}`);
+        setTitle(data.title || "");
+        setContent(data.content || "");
+      } catch {
+        setError("Could not load note.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNote();
+  }, [id]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,30 +48,34 @@ const NoteForm = () => {
     setError("");
 
     try {
-      const payload = { title, content, isPinned };
-      if (isEditing) {
-        await api.patch(`/notes/${id}`, payload);
+      if (id) {
+        await api.put(`/notes/${id}`, { title, content });
       } else {
-        await api.post("/notes", payload);
+        await api.post("/notes", { title, content });
       }
       navigate("/notes");
     } catch {
-      setError(isEditing ? "Could not update note." : "Could not create note.");
+      setError(id ? "Could not update note." : "Could not create note.");
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return <main className="min-h-screen bg-slate-100 p-6 text-slate-500">Loading note...</main>;
+  }
+
   return (
     <main className="min-h-screen bg-slate-100 p-6">
       <form onSubmit={handleSubmit} className="mx-auto max-w-2xl rounded bg-white p-6 shadow-sm">
         <h1 className="mb-6 text-2xl font-bold text-slate-800">
-          {isEditing ? "Edit Note" : "Create Note"}
+          {id ? "Edit Note" : "Create Note"}
         </h1>
         {error && <p className="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-        <label className="mb-4 block text-sm font-medium text-slate-700">
+        <label htmlFor="note-title" className="mb-4 block text-sm font-medium text-slate-700">
           Title
           <input
+            id="note-title"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             required
@@ -51,20 +83,12 @@ const NoteForm = () => {
             className="mt-1 w-full rounded border border-slate-300 p-2"
           />
         </label>
-        <label className="mb-4 block text-sm font-medium text-slate-700">
-          Content
-          <textarea
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-            required
-            rows={8}
-            className="mt-1 w-full rounded border border-slate-300 p-2"
-          />
-        </label>
-        <label className="mb-6 flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" checked={isPinned} onChange={(event) => setIsPinned(event.target.checked)} />
-          Pinned
-        </label>
+        <div className="mb-6 text-sm font-medium text-slate-700">
+          <label htmlFor="note-content" className="mb-1 block">Content</label>
+          <div id="note-content">
+            <JoditEditor ref={editor} value={content} config={config} onBlur={(newContent) => setContent(newContent)} />
+          </div>
+        </div>
         <div className="flex justify-end gap-2">
           <button type="button" onClick={() => navigate("/notes")} className="rounded border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700">
             Cancel

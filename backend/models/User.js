@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 8,
-        match: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*\W).{8,}/,
+        //removing for local testing
+        // match: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*\W).{8,}/, 
         select: false,
     },
 },

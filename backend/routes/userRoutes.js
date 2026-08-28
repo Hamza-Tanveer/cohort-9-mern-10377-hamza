@@ -4,10 +4,13 @@ const User = require('./../models/User');
 const logger = require('./../logger');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Auth = require('../middleware/auth');
 
 const cookieOptions = {
     httpOnly: true,
     maxAge: 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
 };
 
 //user signup endpoint
@@ -73,6 +76,22 @@ router.post('/login', async (req, res) => {
         res.status(400).json({error: 'Login failed'});
     }
 })
+
+router.get('/me', Auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select('name email');
+
+        if (!user) {
+            return res.status(401).json({error: 'Authentication required'});
+        }
+
+        res.status(200).json({user});
+    }
+    catch (err) {
+        logger.error({err, userId: req.userId}, 'Could not verify session');
+        res.status(500).json({error: 'Could not verify session'});
+    }
+});
 
 //user logout
 router.post('/logout', (req, res) => {
